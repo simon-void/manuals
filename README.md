@@ -4,6 +4,7 @@ Usefull tips/commands for
 - Docker
 - Docker Compose
 - Hugo
+- openssl
 
 ## Docker
 
@@ -133,3 +134,47 @@ set in *docker-compose.yml*
 
 **hugo** // generate html from hugo templates  
 **hugo server** // start a local server to hot-reloads the current site  
+
+
+## newman
+
+start to execute a collection with certain environment variable and a specific ssl certificate
+```shell
+newman run ./collection.postman_collection.json -e ./env.postman_environment.json --ssl-client-cert-list Cert-list.json
+```
+with `Cert-list.json` looking like this, assuming you have a single p12-or-pfx certificate file
+
+```json
+[{
+  "name": "some name",
+  "matches": ["https://kon-instanz2.titus.gematik.solutions/*"],
+  "pfx": {"src": "./path_to_your_pfx_file.p12"},
+  "passphrase": "00"
+}]
+```
+or like this if private and public key have been split into separate files
+```json
+[{
+  "name": "some name",
+  "matches": ["https://kon-instanz2.titus.gematik.solutions/*"],
+  "key": {"src": "./PRV.key"},
+  "cert": {"src": "./PUB.key"},
+  "passphrase": "00"
+}]
+```
+to see how you can split a p12/pfx file into public and private key, check the openssl section.
+
+## openssl
+
+extract private key from file INPUT.p12 into file PRV.key
+```shell
+openssl pkcs12 -in INPUT.p12 -out PRV.key -nodes -nocerts
+```
+extract public key(s) from file INPUT.p12 into file PRV.key
+```shell
+openssl pkcs12 -in INPUT.p12 -out PUB.key -nokeys
+```
+if your only interested if the extraction would succedd use `-info`, e.g.
+```shell
+openssl pkcs12 -in INPUT.p12 -info -nokeys
+```
