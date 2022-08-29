@@ -166,6 +166,8 @@ to see how you can split a p12/pfx file into public and private key, check the o
 
 ## openssl
 
+### extracting private/public key
+
 extract private key from file INPUT.p12 into file PRV.key
 ```shell
 openssl pkcs12 -in INPUT.p12 -out PRV.key -nodes -nocerts
@@ -174,7 +176,20 @@ extract public key(s) from file INPUT.p12 into file PRV.key
 ```shell
 openssl pkcs12 -in INPUT.p12 -out PUB.key -nokeys
 ```
-if your only interested if the extraction would succedd use `-info`, e.g.
+if your only interested if the extraction would succeed use `-info`, e.g.
 ```shell
 openssl pkcs12 -in INPUT.p12 -info -nokeys
+```
+
+### seting up a VPN
+
+send everything over vpn
+```shell
+sudo openconnect --protocol=gp --os=win --csd-wrapper=/usr/libexec/openconnect/hipreport.sh vpn.endpoint.de
+```
+
+only send some domains over vpn
+```shell
+# `...` is a space-separated list of all domains, e.g. www.heise.de, which are to be send over the vpn. all other domains won't be send over the vpn
+sudo openconnect --protocol=gp --os=win --csd-wrapper=/usr/libexec/openconnect/hipreport.sh vpn.endpoint.de -s 'vpn-slice --nbns ...'
 ```
